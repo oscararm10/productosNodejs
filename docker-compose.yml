@@ -1,0 +1,16 @@
+version: '3'
+services:
+  products:
+    build: ./products
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./products:/app
+  inventory:
+    build: ./inventory
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./inventory:/app
+    depends_on:
+      - products
