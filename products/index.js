@@ -211,6 +211,8 @@ app.get('/productos', (req, res) => {
   });
 });
 
+
+// Documentacion Swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -226,7 +228,7 @@ const swaggerOptions = {
       { url: 'http://localhost:3000' }
     ],
   },
-  apis: ['./index.js'], // o pon aquí la ruta de los archivos con comentarios JSDoc
+  apis: ['./index.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
