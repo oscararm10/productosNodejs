@@ -8,7 +8,7 @@ app.use(bodyParser.json({ type: ['application/json', 'application/vnd.api+json']
 /**
  * @openapi
  * /inventarios/{producto_id}:
- *   get:
+ *   Post:
  *     summary: Crear inventario de un producto
  *     parameters:
  *       - name: producto_id
@@ -20,7 +20,6 @@ app.use(bodyParser.json({ type: ['application/json', 'application/vnd.api+json']
  *       200:
  *         description: Cantidad disponible y datos del producto
  */
-
 app.post('/inventarios', (req, res) => {
   const { producto_id, cantidad } = req.body.data.attributes;
   db.run("INSERT INTO inventarios (producto_id, cantidad) VALUES (?, ?)", [producto_id, cantidad], function(err) {
@@ -28,7 +27,6 @@ app.post('/inventarios', (req, res) => {
     res.json({ data: { type: 'inventarios', id: String(producto_id), attributes: { cantidad } } });
   });
 });
-
 
 /**
  * @openapi
@@ -84,7 +82,6 @@ app.get('/inventarios/:producto_id', async (req, res) => {
  *       200:
  *         description: Cantidad disponible y datos del producto
  */
-
 app.post('/inventarios/:producto_id/compra', (req, res) => {
   const producto_id = req.params.producto_id;
   const { cantidad } = req.body.data.attributes;
@@ -100,6 +97,8 @@ app.post('/inventarios/:producto_id/compra', (req, res) => {
   });
 });
 
+
+// Documentacion Swagger
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -115,14 +114,13 @@ const swaggerOptions = {
       { url: 'http://localhost:3001' }
     ],
   },
-  apis: ['./index.js'], // o pon aquí la ruta de los archivos con comentarios JSDoc
+  apis: ['./index.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-// al final de index.js
 if (require.main === module) {
   app.listen(3001, () => console.log('Inventory service running on port 3001'));
 }
