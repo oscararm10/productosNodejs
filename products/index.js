@@ -4,8 +4,37 @@ const db = require('./db');
 const app = express();
 app.use(bodyParser.json({ type: ['application/json', 'application/vnd.api+json'] }));
 
-
-// Crear producto
+/**
+ * @openapi
+ * /productos:
+ *   post:
+ *     summary: Crear un nuevo producto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/vnd.api+json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     example: productos
+ *                   attributes:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: Café
+ *                       precio:
+ *                         type: number
+ *                         example: 10.5
+ *     responses:
+ *       200:
+ *         description: Producto creado exitosamente
+ */
 app.post('/productos', (req, res) => {
   
   const { nombre, precio } = req.body.data.attributes;
@@ -16,7 +45,37 @@ app.post('/productos', (req, res) => {
   });
 });
 
-// Obtener producto por id
+/**
+ * @openapi
+ * /productos/:id:
+ *   post:
+ *     summary: Obtener un producto por id
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/vnd.api+json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     example: productos
+ *                   attributes:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: Café
+ *                       precio:
+ *                         type: number
+ *                         example: 10.5
+ *     responses:
+ *       200:
+ *         description: Ok
+ */
 app.get('/productos/:id', (req, res) => {
   db.get("SELECT * FROM productos WHERE id = ?", [req.params.id], (err, row) => {
     if (err) return res.status(500).json({ errors: [{ detail: err.message }] });
@@ -25,7 +84,37 @@ app.get('/productos/:id', (req, res) => {
   });
 });
 
-// Actualizar producto
+/**
+ * @openapi
+ * /productos/:id:
+ *   patch:
+ *     summary: Actualizar un producto
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/vnd.api+json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     example: productos
+ *                   attributes:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: Café
+ *                       precio:
+ *                         type: number
+ *                         example: 10.5
+ *     responses:
+ *       200:
+ *         description: Producto actualizado exitosamente
+ */
 app.patch('/productos/:id', (req, res) => {
   const { nombre, precio } = req.body.data.attributes;
   db.run("UPDATE productos SET nombre = ?, precio = ? WHERE id = ?", [nombre, precio, req.params.id], function(err) {
@@ -34,7 +123,37 @@ app.patch('/productos/:id', (req, res) => {
   });
 });
 
-// Eliminar producto
+/**
+ * @openapi
+ * /productos/:id:
+ *   delete:
+ *     summary: eliminar un producto
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/vnd.api+json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     example: productos
+ *                   attributes:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: Café
+ *                       precio:
+ *                         type: number
+ *                         example: 10.5
+ *     responses:
+ *       200:
+ *         description: Producto eliminado exitosamente
+ */
 app.delete('/productos/:id', (req, res) => {
   db.run("DELETE FROM productos WHERE id = ?", [req.params.id], function(err) {
     if (err) return res.status(500).json({ errors: [{ detail: err.message }] });
@@ -42,7 +161,37 @@ app.delete('/productos/:id', (req, res) => {
   });
 });
 
-// Listar productos
+/**
+ * @openapi
+ * /productos:
+ *   get:
+ *     summary: Obtener un producto por id
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/vnd.api+json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     example: productos
+ *                   attributes:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: Café
+ *                       precio:
+ *                         type: number
+ *                         example: 10.5
+ *     responses:
+ *       200:
+ *         description: Ok
+ */
 app.get('/productos', (req, res) => {
   const page = parseInt(req.query['page[number]']) || 1;
   const size = parseInt(req.query['page[size]']) || 10;
@@ -61,6 +210,28 @@ app.get('/productos', (req, res) => {
     });
   });
 });
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Products API',
+      version: '1.0.0',
+      description: 'API de productos con JSON:API',
+    },
+    servers: [
+      { url: 'http://localhost:3000' }
+    ],
+  },
+  apis: ['./index.js'], // o pon aquí la ruta de los archivos con comentarios JSDoc
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 if (require.main === module) {
   app.listen(3000, () => console.log('Products service running on port 3000'));
