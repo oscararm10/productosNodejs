@@ -142,7 +142,7 @@ sequenceDiagram
 
 # Recursos adicionales
 
-JSON:API Spec
-Express Docs
-SQLite Docs
-Docker Docs
+- JSON:API Spec
+- Express Docs
+- SQLite Docs
+- Docker Docs
